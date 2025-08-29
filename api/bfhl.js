@@ -25,45 +25,40 @@ export default function handler(req, res) {
 
   const userIdBase = `${sanitizeFullName(process.env.FULL_NAME)}_${process.env.DOB_DDMMYYYY || '17091999'}`;
   const defaultEmail = process.env.EMAIL || 'john@xyz.com';
-  const defaultRoll  = process.env.ROLL_NUMBER || 'ABCD123';
+  const defaultRoll = process.env.ROLL_NUMBER || 'ABCD123';
 
   if (req.method !== 'POST') {
-    return res
-      .status(200)
-      .send(JSON.stringify({
-        is_success: false,
-        user_id: userIdBase,
-        email: defaultEmail,
-        roll_number: defaultRoll,
-        odd_numbers: [],
-        even_numbers: [],
-        alphabets: [],
-        special_characters: [],
-        sum: "0",
-        concat_string: "",
-        error: "Only POST allowed. Send JSON with { \"data\": [...] }"
-      }, null, 2));
+    return res.status(200).json({
+      is_success: false,
+      user_id: userIdBase,
+      email: defaultEmail,
+      roll_number: defaultRoll,
+      odd_numbers: [],
+      even_numbers: [],
+      alphabets: [],
+      special_characters: [],
+      sum: "0",
+      concat_string: "",
+      error: "Only POST allowed. Send JSON with { \"data\": [...] }"
+    });
   }
 
-  const body = req.body ?? {};
-  const data = body.data;
+  const data = req.body?.data;
 
   if (!Array.isArray(data)) {
-    return res
-      .status(200)
-      .send(JSON.stringify({
-        is_success: false,
-        user_id: userIdBase,
-        email: defaultEmail,
-        roll_number: defaultRoll,
-        odd_numbers: [],
-        even_numbers: [],
-        alphabets: [],
-        special_characters: [],
-        sum: "0",
-        concat_string: "",
-        error: "Request body must be JSON with a 'data' array."
-      }, null, 2));
+    return res.status(200).json({
+      is_success: false,
+      user_id: userIdBase,
+      email: defaultEmail,
+      roll_number: defaultRoll,
+      odd_numbers: [],
+      even_numbers: [],
+      alphabets: [],
+      special_characters: [],
+      sum: "0",
+      concat_string: "",
+      error: "Request body must be JSON with a 'data' array."
+    });
   }
 
   const odd_numbers = [];
@@ -92,7 +87,7 @@ export default function handler(req, res) {
 
   const concat_string = alternatingCapsFromReversedLetters(allLettersInOrder);
 
-  const response = {
+  return res.status(200).json({
     is_success: true,
     user_id: userIdBase,
     email: defaultEmail,
@@ -103,7 +98,5 @@ export default function handler(req, res) {
     special_characters,
     sum: String(sum),
     concat_string
-  };
-
-  return res.status(200).send(JSON.stringify(response, null, 2));
+  });
 }
